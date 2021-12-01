@@ -1,5 +1,6 @@
 package com.files.comp220project5;
-
+import javafx.geometry.VPos;
+import javafx.geometry.Pos;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -44,6 +45,7 @@ public class TextEditor extends Application {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/Text.html
         Text content = new Text();
         content.setTextAlignment(TextAlignment.LEFT);
+        BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
         content.setWrappingWidth(1024);
         // add this text field to the layout
         layout.setCenter(content);
@@ -52,7 +54,7 @@ public class TextEditor extends Application {
         Button btn = new Button("Save");
         // define the code that should run when the button is clicked
         btn.setOnAction(event -> {
-
+        //TODO: stuff in here
         });
         // add this button to the layout centered at the bottom with some spacing from other elements
         BorderPane.setAlignment(btn, Pos.CENTER);
@@ -71,7 +73,9 @@ public class TextEditor extends Application {
             }
             else if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 text.deleteText();
-                content.setText(text.toString());
+                //text.getList();
+                content.setText(text.toString().substring(0, text.toString().length() - 1));
+
             }
             else if (event.getCode().equals(37)) {
                 text.moveCursorBackward();

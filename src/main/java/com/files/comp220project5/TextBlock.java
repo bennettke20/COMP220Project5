@@ -69,8 +69,9 @@ public class TextBlock {
     public void deleteText() {
         //TODO: code to delete the Character at the cursor index
         if (cursor>0) {
-            charList.remove(cursor-1);
-            cursor--;
+            this.charList.remove(cursor-1);
+            //cursor--;
+            cursor = cursor - 2;
         }
     }
 
