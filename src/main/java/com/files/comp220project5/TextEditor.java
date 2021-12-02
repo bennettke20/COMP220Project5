@@ -34,8 +34,8 @@ public class TextEditor extends Application {
         // Create a new scene using this layout
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Scene.html
         // define the size of this scene
-        double WINDOW_WIDTH = 1280;
-        double WINDOW_HEIGHT = 720;
+        double WINDOW_WIDTH = 1000;
+        double WINDOW_HEIGHT = 600;
         Scene editorScene = new Scene(layout, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // make this scene the initial (and for now only) scene in your application
@@ -73,14 +73,14 @@ public class TextEditor extends Application {
             }
             else if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 text.deleteText();
-                //text.getList();
-                content.setText(text.toString().substring(0, text.toString().length() - 1));
-
+                content.setText(text.toString() + "BACKSPACE");
             }
-            else if (event.getCode().equals(37)) {
+            else if (event.getCode().equals(KeyCode.KP_LEFT)) {
                 text.moveCursorBackward();
-            } else if (event.getCode().equals(39)) {
+                content.setText(text.toString() + "RIGHT ARROW WORKED");
+            } else if (event.getCode().equals(KeyCode.KP_RIGHT)) {
                 text.moveCursorForward();
+                content.setText(text.toString() + "LEFT ARROW WORKED");
             }
         });
 
@@ -89,8 +89,11 @@ public class TextEditor extends Application {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/input/KeyEvent.html
         editorScene.setOnKeyTyped(event -> {
             // TODO: add whatever the typed character is to the text on this page
-            text.insertText(event.getCharacter().charAt(0));
-            content.setText(text.toString());
+
+            if (event.getCode()!=KeyCode.BACK_SPACE) {
+                text.insertText(event.getCharacter().charAt(0));
+                content.setText(text.toString());
+            }
             //charList.add(event.getCharacter().charAt(0));
             // NOTE: the typed String can be retrieved with event.getCharacter()
         });

@@ -29,17 +29,13 @@ public class TextBlock {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (int i=0; i<cursor; i++) {
+        for(int i=0; i<cursor; i++) {
             str.append(charList.get(i));
         }
         str.append("|");
-        /*for (int i=cursor; i<charList.size(); i++) {
+        for (int i=cursor; i<charList.size(); i++) {
             str.append(charList.get(i));
         }
-        /*for(Character c : charList) {
-            str.append(c);
-        }
-        */
         return str.toString();
     }
 
@@ -49,7 +45,7 @@ public class TextBlock {
      */
     public void insertText(char toAdd) {
         //TODO: inserts char at cursor index
-        charList.add(toAdd);
+        charList.add(cursor, toAdd);
         cursor++;
     }
 

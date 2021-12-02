@@ -11,6 +11,7 @@ public class PrintableKey extends Key {
      * int corresponding to the ASCII code of the char of the Key
      */
     private int idUnicode;
+    private char c;
 
     /**
      * Constructs a PrintableKey representing a particular char
