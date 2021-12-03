@@ -98,4 +98,13 @@ public class TextBlock {
     }
 
     public ArrayList<Character> getList() {return charList;}
+
+    public void resetListfromStr(String str) {  //need this for open function
+        char[] a = str.toCharArray();
+        this.charList.clear();
+        for ( char c : a) {
+            this.charList.add(c);
+        }
+        cursor = this.charList.size()-1;
+    }
 }

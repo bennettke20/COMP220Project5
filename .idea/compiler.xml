@@ -13,4 +13,9 @@
       <module name="COMP220Project5" target="15" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="COMP220Project5" options="--add-exports java.datatransfer/java.awt=com.files.comp220project5" />
+    </option>
+  </component>
 </project>

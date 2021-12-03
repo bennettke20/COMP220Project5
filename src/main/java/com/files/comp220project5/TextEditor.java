@@ -1,17 +1,27 @@
 package com.files.comp220project5;
-import javafx.geometry.VPos;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 
 public class TextEditor extends Application {
@@ -43,18 +53,62 @@ public class TextEditor extends Application {
         // make this scene the initial (and for now only) scene in your application
         primaryStage.setScene(editorScene);
 
+
         // create a new text node to display text on the interface
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/Text.html
         Text content = new Text();
         content.setFocusTraversable(false);
         content.setTextAlignment(TextAlignment.LEFT);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
-        content.setWrappingWidth(1024);
+        content.setWrappingWidth(900);
         // add this text field to the layout
         layout.setCenter(content);
 
+        //my add: add a skeleton menu bar w save, open, more options later
+        MenuBar mb = new MenuBar();
+        Menu filemenu = new Menu("FileOptions");
+        MenuItem saveItem = new MenuItem("Save");
+        MenuItem openItem = new MenuItem("Open");
+        MenuItem newItem = new MenuItem("New");
+        filemenu.getItems().add(saveItem);
+        filemenu.getItems().add(openItem);
+        filemenu.getItems().add(newItem);
+        mb.getMenus().add(filemenu);
+        layout.setTop(mb);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        //action on saveitem
+        saveItem.setOnAction(new EventHandler<ActionEvent>() {  //SAVE FILE
+            public void handle(ActionEvent event) {
+                File file = fileChooser.showSaveDialog(primaryStage);
+                if (file != null) {
+                    saveText(text.toString(), file);
+                    //TODO: minor issue, this saves the old cursor as well and shouldn't
+                }
+            }
+        });
+        //action on openItem
+        openItem.setOnAction(new EventHandler<ActionEvent>(){  //OPEN FILE
+            public void handle(ActionEvent event) {
+                File file = fileChooser.showOpenDialog(primaryStage);
+                if (file != null) {
+                    text.resetListfromStr(readToOpen(file));
+                    content.setText(text.toString());
+                }
+            }
+        });
+        newItem.setOnAction(new EventHandler<ActionEvent>(){  //RESET EDITOR
+            public void handle(ActionEvent event) {
+                //TODO: make a reset warning and confirmation?
+                    text.resetListfromStr(" ");
+                    content.setText(text.toString());
+            }
+        });
+
         // create a new button object and set its text
-        Button btn = new Button("Save");
+        Button btn = new Button("removed, see menu");
         btn.setFocusTraversable(false);
         // define the code that should run when the button is clicked
         btn.setOnAction(event -> {
@@ -91,16 +145,20 @@ public class TextEditor extends Application {
             }
             else if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 text.deleteText();
-                content.setText(text.toString() + "BACKSPACE");
+                content.setText(text.toString());
             }
             else if (event.getCode().equals(KeyCode.LEFT)) {
                 text.moveCursorBackward();
-                content.setText(text.toString() + "LEFT ARROW WORKED");
+                content.setText(text.toString());
                 System.out.println("L arr detected");
             } else if (event.getCode().equals(KeyCode.RIGHT)) {
                 text.moveCursorForward();
-                content.setText(text.toString() + "RIGHT ARROW WORKED");
+                content.setText(text.toString());
                 System.out.println("r arr detected");
+            }
+            else if (event.getCode().equals(KeyCode.ENTER)) {  //TODO need to commit this
+                text.insertText('\n');
+                content.setText(text.toString());
             }
         });
 
@@ -112,7 +170,7 @@ public class TextEditor extends Application {
             char c = event.getCharacter().charAt(0);
             if (Character.getType(c)!=Character.CONTROL) {
                 text.insertText(event.getCharacter().charAt(0));
-                content.setText(text.toString() + " TRIGGERED");
+                content.setText(text.toString());
             } else {
                 System.out.println(c);
             }
@@ -123,6 +181,37 @@ public class TextEditor extends Application {
         // display the interface
         primaryStage.show();
     }
+
+    private void saveText(String content, File file) {  //saving helper method
+        try {
+            PrintWriter writer;
+            writer = new PrintWriter(file);
+            writer.println(content);
+            writer.close();
+        } catch (IOException ex) {
+            //TODO make a pop up error message
+            System.out.println(ex.getStackTrace());
+        }
+    }
+
+    private String readToOpen(File file) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            //
+            FileInputStream f = new FileInputStream(file);
+            Scanner scanner = new Scanner(f);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                (sb.append(line)).append("\n");
+
+            }
+        } catch (IOException e) {
+            // TODO make a pop up error message
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
 
     public static void main(String[] args) {
         launch();
