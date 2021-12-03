@@ -95,7 +95,7 @@ public class TextBlock {
         if (cursor > 0) {
             cursor--;
         }
-    }
+    }//i
 
     public ArrayList<Character> getList() {return charList;}
 

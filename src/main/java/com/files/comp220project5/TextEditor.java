@@ -130,8 +130,8 @@ public class TextEditor extends Application {
                 text.moveCursorForward();
                 content.setText(text.toString() + "LEFT ARROW WORKED");
             }
-        });
-*/
+        }); */
+
 
         // define code to run every time a KeyPressed event is detected on this window to check for ESC to close
         // NOTE: there even is of type javafx.scene.input.KeyEvent
