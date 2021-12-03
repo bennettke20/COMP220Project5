@@ -67,7 +67,7 @@ public class TextBlock {
         if (cursor>0) {
             this.charList.remove(cursor-1);
             //cursor--;
-            cursor = cursor - 2;
+            cursor = cursor - 1;
         }
     }
 

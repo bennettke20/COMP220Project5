@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -37,6 +38,7 @@ public class TextEditor extends Application {
         double WINDOW_WIDTH = 1000;
         double WINDOW_HEIGHT = 600;
         Scene editorScene = new Scene(layout, WINDOW_WIDTH, WINDOW_HEIGHT);
+        //editorScene.setFocusTraversable(false); // removes capability of arrow switch between objects
 
         // make this scene the initial (and for now only) scene in your application
         primaryStage.setScene(editorScene);
@@ -44,6 +46,7 @@ public class TextEditor extends Application {
         // create a new text node to display text on the interface
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/Text.html
         Text content = new Text();
+        content.setFocusTraversable(false);
         content.setTextAlignment(TextAlignment.LEFT);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
         content.setWrappingWidth(1024);
@@ -52,6 +55,7 @@ public class TextEditor extends Application {
 
         // create a new button object and set its text
         Button btn = new Button("Save");
+        btn.setFocusTraversable(false);
         // define the code that should run when the button is clicked
         btn.setOnAction(event -> {
         //TODO: stuff in here
@@ -62,11 +66,25 @@ public class TextEditor extends Application {
         layout.setBottom(btn);
 
 
+        /*
+        editorScene.setOnKeyReleased(event -> {
+            System.out.println(event.getCode());
+            if (event.getCode().equals(KeyCode.L)) {
+                text.moveCursorBackward();
+                content.setText(text.toString() + "RIGHT ARROW WORKED");
+            } else if (event.getCode().equals(KeyCode.R)) {
+                text.moveCursorForward();
+                content.setText(text.toString() + "LEFT ARROW WORKED");
+            }
+        });
+*/
+
         // define code to run every time a KeyPressed event is detected on this window to check for ESC to close
         // NOTE: there even is of type javafx.scene.input.KeyEvent
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/input/KeyEvent.html
         editorScene.setOnKeyPressed(event -> {
             // check if the key that was pressed is the ESC key
+           System.out.println(event.getCode());
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 // exit the program
                 System.exit(0);
@@ -75,10 +93,10 @@ public class TextEditor extends Application {
                 text.deleteText();
                 content.setText(text.toString() + "BACKSPACE");
             }
-            else if (event.getCode().equals(KeyCode.KP_LEFT)) {
+            else if (event.getCode().equals(KeyCode.L)) {
                 text.moveCursorBackward();
                 content.setText(text.toString() + "RIGHT ARROW WORKED");
-            } else if (event.getCode().equals(KeyCode.KP_RIGHT)) {
+            } else if (event.getCode().equals(KeyCode.R)) {
                 text.moveCursorForward();
                 content.setText(text.toString() + "LEFT ARROW WORKED");
             }
@@ -89,10 +107,12 @@ public class TextEditor extends Application {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/input/KeyEvent.html
         editorScene.setOnKeyTyped(event -> {
             // TODO: add whatever the typed character is to the text on this page
-
-            if (event.getCode()!=KeyCode.BACK_SPACE) {
+            char c = event.getCharacter().charAt(0);
+            if (Character.getType(c)!=Character.CONTROL) {
                 text.insertText(event.getCharacter().charAt(0));
-                content.setText(text.toString());
+                content.setText(text.toString() + " TRIGGERED");
+            } else {
+                System.out.println(c);
             }
             //charList.add(event.getCharacter().charAt(0));
             // NOTE: the typed String can be retrieved with event.getCharacter()
