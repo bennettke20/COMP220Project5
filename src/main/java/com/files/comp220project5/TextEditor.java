@@ -93,12 +93,14 @@ public class TextEditor extends Application {
                 text.deleteText();
                 content.setText(text.toString() + "BACKSPACE");
             }
-            else if (event.getCode().equals(KeyCode.L)) {
+            else if (event.getCode().equals(KeyCode.LEFT)) {
                 text.moveCursorBackward();
-                content.setText(text.toString() + "RIGHT ARROW WORKED");
-            } else if (event.getCode().equals(KeyCode.R)) {
-                text.moveCursorForward();
                 content.setText(text.toString() + "LEFT ARROW WORKED");
+                System.out.println("L arr detected");
+            } else if (event.getCode().equals(KeyCode.RIGHT)) {
+                text.moveCursorForward();
+                content.setText(text.toString() + "RIGHT ARROW WORKED");
+                System.out.println("r arr detected");
             }
         });
 
