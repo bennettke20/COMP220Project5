@@ -11,7 +11,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +33,8 @@ public class TextEditor extends Application {
         // Add a title to the application window
         primaryStage.setTitle("COMP 220 - Text Editor");
         AtomicBoolean ctrlDown = new AtomicBoolean(false); // tracks whether CTRL key is down
+        AtomicBoolean isUntitiled = new AtomicBoolean(true); // tracks whether file is an untitled file
+        File currentFile;
         text = new TextBlock();
 
         /*
@@ -100,7 +101,6 @@ public class TextEditor extends Application {
         });
         //ACTION on newItem
         newItem.setOnAction(event -> {  //RESET EDITOR
-            //TODO: make a reset warning and confirmation?
             text = new TextBlock();
                     content.setText(text.toString());
         });
@@ -133,7 +133,6 @@ public class TextEditor extends Application {
             }
         });
         editorScene.setOnKeyPressed(event -> {
-           System.out.println(event.getCode()); // TODO: remove when finished testing
             // ESCAPE COMMAND: exits the program
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 System.exit(0);}
@@ -193,8 +192,6 @@ public class TextEditor extends Application {
             if (Character.getType(c)!=Character.CONTROL) {
                 text.insertText(c);
                 content.setText(text.toString());
-            } else {
-                System.out.println(c);
             }
             });
 
@@ -214,7 +211,6 @@ public class TextEditor extends Application {
             writer.println(content);
             writer.close();
         } catch (IOException ex) {
-            //TODO make a pop up error message
             System.out.println(ex.getStackTrace());
         }
     }
@@ -236,7 +232,6 @@ public class TextEditor extends Application {
 
             }
         } catch (IOException e) {
-            // TODO make a pop up error message
             e.printStackTrace();
         }
         return sb.toString();
