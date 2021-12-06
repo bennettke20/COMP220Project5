@@ -10,7 +10,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -22,10 +21,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class TextEditor extends Application {
-    private final TextBlock text = new TextBlock();
+    private TextBlock text;
 
     /**
      * Set up the starting scene of your application given the primaryStage (basically the window)
@@ -37,151 +37,181 @@ public class TextEditor extends Application {
     public void start(Stage primaryStage) {
         // Add a title to the application window
         primaryStage.setTitle("COMP 220 - Text Editor");
+        AtomicBoolean ctrlDown = new AtomicBoolean(false); // tracks whether CTRL key is down
+        text = new TextBlock();
 
-        // prepare the scene layout to use a BorderPane -- a top, bottom, left, right, center style pane layout
-        // https://docs.oracle.com/javafx/2/layout/builtin_layouts.htm
+        /*
+         * Scene Setup
+         */
         BorderPane layout = new BorderPane();
-
-        // Create a new scene using this layout
-        // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Scene.html
-        // define the size of this scene
         double WINDOW_WIDTH = 1000;
         double WINDOW_HEIGHT = 600;
         Scene editorScene = new Scene(layout, WINDOW_WIDTH, WINDOW_HEIGHT);
-        //editorScene.setFocusTraversable(false); // removes capability of arrow switch between objects
-
-        // make this scene the initial (and for now only) scene in your application
         primaryStage.setScene(editorScene);
 
-
-        // create a new text node to display text on the interface
-        // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/Text.html
+        // text content setup:
         Text content = new Text();
         content.setFocusTraversable(false);
         content.setTextAlignment(TextAlignment.LEFT);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
         content.setWrappingWidth(900);
-        // add this text field to the layout
         layout.setCenter(content);
+        content.setText(text.toString());
 
-        //my add: add a skeleton menu bar w save, open, more options later
+        /*
+         * Responsible for handling menu controlled commands:
+         */
         MenuBar mb = new MenuBar();
-        Menu filemenu = new Menu("FileOptions");
+        // FILE MENU SETUP
+        Menu filemenu = new Menu("File");
         MenuItem saveItem = new MenuItem("Save");
         MenuItem openItem = new MenuItem("Open");
         MenuItem newItem = new MenuItem("New");
+        MenuItem openReadOnly = new MenuItem ("Open Read-Only File");
         filemenu.getItems().add(saveItem);
         filemenu.getItems().add(openItem);
         filemenu.getItems().add(newItem);
+        filemenu.getItems().add(openReadOnly);
+        //TEXT MENU SETUP
+        Menu textmenu = new Menu("Options");
+        MenuItem undoCommand = new MenuItem("Undo");
+        MenuItem redoCommand = new MenuItem ("Redo");
+        textmenu.getItems().add(undoCommand);
+        textmenu.getItems().add(redoCommand);
+        //MENU DISPLAY SETUP
         mb.getMenus().add(filemenu);
+        mb.getMenus().add(textmenu);
         layout.setTop(mb);
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+        fileChooser.setTitle("File");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
+                "TEXT files (*.txt)", "*.txt")); // i.e. text files only
 
-        //action on saveitem
-        saveItem.setOnAction(new EventHandler<ActionEvent>() {  //SAVE FILE
-            public void handle(ActionEvent event) {
-                File file = fileChooser.showSaveDialog(primaryStage);
+        //ACTION on saveitem
+        saveItem.setOnAction(event -> {  //SAVE FILE
+            File file = fileChooser.showSaveDialog(primaryStage);
                 if (file != null) {
-                    saveText(text.toString(), file);
-                    //TODO: minor issue, this saves the old cursor as well and shouldn't
-                }
+                saveText(text.toStringFile(), file);
             }
         });
-        //action on openItem
-        openItem.setOnAction(new EventHandler<ActionEvent>(){  //OPEN FILE
-            public void handle(ActionEvent event) {
-                File file = fileChooser.showOpenDialog(primaryStage);
+        //ACTION on openItem
+        openItem.setOnAction(event -> {  //OPEN FILE
+            File file = fileChooser.showOpenDialog(primaryStage);
                 if (file != null) {
-                    text.resetListfromStr(readToOpen(file));
-                    content.setText(text.toString());
-                }
-            }
-        });
-        newItem.setOnAction(new EventHandler<ActionEvent>(){  //RESET EDITOR
-            public void handle(ActionEvent event) {
-                //TODO: make a reset warning and confirmation?
-                    text.resetListfromStr(" ");
-                    content.setText(text.toString());
-            }
-        });
-
-        // create a new button object and set its text
-        Button btn = new Button("removed, see menu");
-        btn.setFocusTraversable(false);
-        // define the code that should run when the button is clicked
-        btn.setOnAction(event -> {
-        //TODO: stuff in here
-        });
-        // add this button to the layout centered at the bottom with some spacing from other elements
-        BorderPane.setAlignment(btn, Pos.CENTER);
-        BorderPane.setMargin(btn, new Insets(16, 16, 16, 16));
-        layout.setBottom(btn);
-
-
-        /*
-        editorScene.setOnKeyReleased(event -> {
-            System.out.println(event.getCode());
-            if (event.getCode().equals(KeyCode.L)) {
-                text.moveCursorBackward();
-                content.setText(text.toString() + "RIGHT ARROW WORKED");
-            } else if (event.getCode().equals(KeyCode.R)) {
-                text.moveCursorForward();
-                content.setText(text.toString() + "LEFT ARROW WORKED");
-            }
-        }); */
-
-
-        // define code to run every time a KeyPressed event is detected on this window to check for ESC to close
-        // NOTE: there even is of type javafx.scene.input.KeyEvent
-        // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/input/KeyEvent.html
-        editorScene.setOnKeyPressed(event -> {
-            // check if the key that was pressed is the ESC key
-           System.out.println(event.getCode());
-            if (event.getCode().equals(KeyCode.ESCAPE)) {
-                // exit the program
-                System.exit(0);
-            }
-            else if (event.getCode().equals(KeyCode.BACK_SPACE)) {
-                text.deleteText();
+                text = new TextBlock(readToOpen(file));
+                //text.resetListfromStr(readToOpen(file));
                 content.setText(text.toString());
             }
+        });
+        //ACTION on newItem
+        newItem.setOnAction(event -> {  //RESET EDITOR
+            //TODO: make a reset warning and confirmation?
+            text = new TextBlock();
+                    content.setText(text.toString());
+        });
+        //ACTION on openReadOnly
+        openReadOnly.setOnAction(event -> { // OPEN READ-ONLY
+            File file = fileChooser.showOpenDialog(primaryStage);
+                if (file != null) {
+                text = new ReadOnlyText(readToOpen(file));
+                content.setText(text.toString());
+            }
+        });
+        //ACTION on undoCommand
+        undoCommand.setOnAction(event -> { // UNDO COMMAND
+            text.undo();
+            content.setText(text.toString());
+        });
+        //ACTION on redoCommand
+        redoCommand.setOnAction(event -> {
+            text.redo();
+            content.setText(text.toString());
+        });
+
+        /*
+         * Responsible for handling keyboard controlled commands:
+         */
+        editorScene.setOnKeyReleased(event -> {
+            // CTRL UP COMMAND: tracks whether the control key has been released
+            if (event.getCode().equals(KeyCode.CONTROL)) {
+                ctrlDown.set(false);
+            }
+        });
+        editorScene.setOnKeyPressed(event -> {
+           System.out.println(event.getCode()); // TODO: remove when finished testing
+            // ESCAPE COMMAND: exits the program
+            if (event.getCode().equals(KeyCode.ESCAPE)) {
+                System.exit(0);}
+            // BACKSPACE COMMAND: deletes text backwards
+            else if (event.getCode().equals(KeyCode.BACK_SPACE)) {
+                text.deleteTextBack();
+                content.setText(text.toString());}
+            // DELETE COMMAND: deletes text forward
+            else if (event.getCode().equals(KeyCode.DELETE)) {
+                text.deleteTextForward();
+                content.setText(text.toString());}
+            // LEFT ARROW KEY COMMAND: moves cursor left
             else if (event.getCode().equals(KeyCode.LEFT)) {
                 text.moveCursorBackward();
                 content.setText(text.toString());
-                System.out.println("L arr detected");
-            } else if (event.getCode().equals(KeyCode.RIGHT)) {
+                System.out.println("L arr detected");}
+            // RIGHT ARROW KEY COMMAND: moves cursor right
+            else if (event.getCode().equals(KeyCode.RIGHT)) {
                 text.moveCursorForward();
                 content.setText(text.toString());
-                System.out.println("r arr detected");
-            }
-            else if (event.getCode().equals(KeyCode.ENTER)) {  //TODO need to commit this
+                System.out.println("r arr detected");}
+            // ENTER COMMAND: adds a new line to the text
+            else if (event.getCode().equals(KeyCode.ENTER)) {
                 text.insertText('\n');
+                content.setText(text.toString());}
+            // TAB COMMAND: adds a tab to the text
+            else if (event.getCode().equals(KeyCode.TAB)) {
+                text.insertText('\t');
+                content.setText(text.toString());}
+            // CTRL DOWN COMMAND: tracks whether the control key has been pressed
+            else if (event.getCode().equals(KeyCode.CONTROL)) {
+                ctrlDown.set(true);}
+            // SAVE COMMAND (CTRL+S): allows user to save the file
+            else if (event.getCode().equals(KeyCode.S) && ctrlDown.getOpaque()) {
+                File file = fileChooser.showSaveDialog(primaryStage);
+                if (file != null) {
+                    saveText(text.toStringFile(), file);
+                }}
+            // UNDO COMMAND (CTRL+Z): allows user to undo the latest text modifying command
+            else if (event.getCode().equals(KeyCode.Z) && ctrlDown.getOpaque()) {
+                text.undo();
+                content.setText(text.toString());}
+            // REDO COMMAND (CTRL+Y): allows user to redo the latest undone text modifying
+            // command (if possible)
+            else if (event.getCode().equals(KeyCode.Y) && ctrlDown.getOpaque()) {
+                text.redo();
                 content.setText(text.toString());
             }
         });
 
-        // define code to run every time a KeyTyped event is detected on this window to check for ESC to close
-        // NOTE: there even is of type javafx.scene.input.KeyEvent
-        // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/input/KeyEvent.html
+        /*
+         * Responsible for adding all text to the text editor:
+         * (dealing with printable keys)
+         */
         editorScene.setOnKeyTyped(event -> {
-            // TODO: add whatever the typed character is to the text on this page
             char c = event.getCharacter().charAt(0);
             if (Character.getType(c)!=Character.CONTROL) {
-                text.insertText(event.getCharacter().charAt(0));
+                text.insertText(c);
                 content.setText(text.toString());
             } else {
                 System.out.println(c);
             }
-            //charList.add(event.getCharacter().charAt(0));
-            // NOTE: the typed String can be retrieved with event.getCharacter()
         });
 
         // display the interface
         primaryStage.show();
     }
 
+    /**
+     * Saves content to a file
+     * @param content String to save
+     * @param file text file to save to
+     */
     private void saveText(String content, File file) {  //saving helper method
         try {
             PrintWriter writer;
@@ -194,6 +224,11 @@ public class TextEditor extends Application {
         }
     }
 
+    /**
+     * Method for extracting String content from files we need to read
+     * @param file text file to extract from
+     * @return String contents extracted
+     */
     private String readToOpen(File file) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -211,7 +246,6 @@ public class TextEditor extends Application {
         }
         return sb.toString();
     }
-
 
     public static void main(String[] args) {
         launch();
