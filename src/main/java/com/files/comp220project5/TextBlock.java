@@ -36,23 +36,23 @@ public class TextBlock {
      * Constructs a blank TextBlock object
      */
     public TextBlock() {
-        charList = new ArrayList<Character>();
+        charList = new ArrayList<>();
         cursor = 0;
-        commandHistory = new Stack<String>();
+        commandHistory = new Stack<>();
         redoable = false;
-        redoableCommands = new Stack<String>();
+        redoableCommands = new Stack<>();
     }
 
     public TextBlock(String starter) {
-        charList = new ArrayList<Character>();
+        charList = new ArrayList<>();
         char[] a = starter.toCharArray();
         for ( char c : a) {
             charList.add(c);
         }
-        cursor = this.charList.size()-1;
-        commandHistory = new Stack<String>();
+        cursor = this.charList.size();
+        commandHistory = new Stack<>();
         redoable = false;
-        redoableCommands = new Stack<String>();
+        redoableCommands = new Stack<>();
     }
     /**
      * Resets TextBlock to blank document
@@ -210,7 +210,6 @@ public class TextBlock {
         redoable = false;
         redoableCommands.empty();
     }
-    public ArrayList<Character> getList() {return charList;}
 
     /**
      * Returns String representation of the text, including a marked

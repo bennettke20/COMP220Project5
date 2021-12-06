@@ -10,8 +10,8 @@ public class ReadOnlyText extends TextBlock {
         super();
     }
 
-    public ReadOnlyText(String str) {
-        super(str);
+    public ReadOnlyText(String starter) {
+        super(starter);
     }
 
     @Override
