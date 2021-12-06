@@ -43,9 +43,9 @@ public class TextBlock {
         redoableCommands = new Stack<String>();
     }
 
-    public TextBlock(String str) {
+    public TextBlock(String starter) {
         charList = new ArrayList<Character>();
-        char[] a = str.toCharArray();
+        char[] a = starter.toCharArray();
         for ( char c : a) {
             charList.add(c);
         }
@@ -63,7 +63,7 @@ public class TextBlock {
         commandHistory.empty();
         redoable = false;
         redoableCommands.empty();
-    }
+    } //TODO: delete?
 
     /**
      * Inserts a Character at the cursor index
@@ -215,7 +215,7 @@ public class TextBlock {
     /**
      * Returns String representation of the text, including a marked
      * cursor location
-     * @return
+     * @return String containing text and cursor
      */
     @Override
     public String toString() {
@@ -233,7 +233,7 @@ public class TextBlock {
     /**
      * Returns a string representation of the text, without a cursor
      * indicator
-     * @return
+     * @return String containing text without cursor
      */
     public String toStringFile() {
         StringBuilder str = new StringBuilder();
