@@ -95,7 +95,6 @@ public class TextEditor extends Application {
             File file = fileChooser.showOpenDialog(primaryStage);
                 if (file != null) {
                 text = new TextBlock(readToOpen(file));
-                //text.resetListfromStr(readToOpen(file));
                 content.setText(text.toString());
             }
         });
