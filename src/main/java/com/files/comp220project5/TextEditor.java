@@ -73,14 +73,14 @@ public class TextEditor extends Application {
         filemenu.getItems().add(newItem);
         filemenu.getItems().add(openReadOnly);
         //TEXT MENU SETUP
-        Menu textmenu = new Menu("Options");
+        Menu editmenu = new Menu("Edit");
         MenuItem undoCommand = new MenuItem("Undo");
         MenuItem redoCommand = new MenuItem ("Redo");
-        textmenu.getItems().add(undoCommand);
-        textmenu.getItems().add(redoCommand);
+        editmenu.getItems().add(undoCommand);
+        editmenu.getItems().add(redoCommand);
         //MENU DISPLAY SETUP
         mb.getMenus().add(filemenu);
-        mb.getMenus().add(textmenu);
+        mb.getMenus().add(editmenu);
         layout.setTop(mb);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("File");
@@ -247,6 +247,9 @@ public class TextEditor extends Application {
         return sb.toString();
     }
 
+    /**
+     * Launches application...
+     */
     public static void main(String[] args) {
         launch();
     }
