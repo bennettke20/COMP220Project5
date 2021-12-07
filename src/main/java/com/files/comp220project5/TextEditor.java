@@ -11,7 +11,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TextEditor extends Application {
     private TextBlock text;
+    private File currentFile;
 
     /**
      * Set up the starting scene of your application given the primaryStage (basically the window)
@@ -32,8 +32,9 @@ public class TextEditor extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Add a title to the application window
-        primaryStage.setTitle("COMP 220 - Text Editor");
+        primaryStage.setTitle("COMP 220 - Text Editor - Untitled");
         AtomicBoolean ctrlDown = new AtomicBoolean(false); // tracks whether CTRL key is down
+        AtomicBoolean isUntitled = new AtomicBoolean(true); // tracks whether file is an untitled file
         text = new TextBlock();
 
         /*
@@ -60,11 +61,13 @@ public class TextEditor extends Application {
         MenuBar mb = new MenuBar();
         // FILE MENU SETUP
         Menu filemenu = new Menu("File");
-        MenuItem saveItem = new MenuItem("Save As");
+        MenuItem saveItem = new MenuItem("Save");
+        MenuItem saveItemAs = new MenuItem("Save As");
         MenuItem openItem = new MenuItem("Open");
         MenuItem newItem = new MenuItem("New");
-        MenuItem openReadOnly = new MenuItem ("Open Read-Only File");
+        MenuItem openReadOnly = new MenuItem ("Open Read-Only");
         filemenu.getItems().add(saveItem);
+        filemenu.getItems().add(saveItemAs);
         filemenu.getItems().add(openItem);
         filemenu.getItems().add(newItem);
         filemenu.getItems().add(openReadOnly);
@@ -83,33 +86,60 @@ public class TextEditor extends Application {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
                 "TEXT files (*.txt)", "*.txt")); // i.e. text files only
 
-        //ACTION on saveitem
+        //ACTION on saveItem
         saveItem.setOnAction(event -> {  //SAVE FILE
-            File file = fileChooser.showSaveDialog(primaryStage);
-                if (file != null) {
-                saveText(text.toStringFile(), file);
+            if (isUntitled.getOpaque()) {
+                currentFile = fileChooser.showSaveDialog(primaryStage);
+                if (currentFile != null) {
+                    saveText(text.toStringFile(), currentFile);
+                    primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                    isUntitled.set(false);
+                }
+            } else {
+                if (currentFile != null) {
+                    saveText(text.toStringFile(), currentFile);
+                }
+            }
+        });
+        //ACTION on saveitemAs
+        saveItemAs.setOnAction(event -> {  //SAVE FILE AS
+            currentFile = fileChooser.showSaveDialog(primaryStage);
+                if (currentFile != null) {
+                saveText(text.toStringFile(), currentFile);
+                isUntitled.set(false);
+                if (text instanceof ReadOnlyText) {
+                    primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName() +
+                    " (Read Only)");
+                } else {
+                    primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                }
             }
         });
         //ACTION on openItem
         openItem.setOnAction(event -> {  //OPEN FILE
-            File file = fileChooser.showOpenDialog(primaryStage);
-                if (file != null) {
-                text = new TextBlock(readToOpen(file));
+            currentFile = fileChooser.showOpenDialog(primaryStage);
+                if (currentFile != null) {
+                text = new TextBlock(readToOpen(currentFile));
                 content.setText(text.toString());
+                primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                isUntitled.set(false);
             }
         });
         //ACTION on newItem
         newItem.setOnAction(event -> {  //RESET EDITOR
-            //TODO: make a reset warning and confirmation?
             text = new TextBlock();
-                    content.setText(text.toString());
+            content.setText(text.toString());
+            isUntitled.set(true);
+            primaryStage.setTitle("COMP 220 - Text Editor - Untitled");
         });
         //ACTION on openReadOnly
         openReadOnly.setOnAction(event -> { // OPEN READ-ONLY
-            File file = fileChooser.showOpenDialog(primaryStage);
-                if (file != null) {
-                text = new ReadOnlyText(readToOpen(file));
+            currentFile = fileChooser.showOpenDialog(primaryStage);
+                if (currentFile != null) {
+                text = new ReadOnlyText(readToOpen(currentFile));
                 content.setText(text.toString());
+                primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName() + " (Read Only)");
+                isUntitled.set(false);
             }
         });
         //ACTION on undoCommand
@@ -133,7 +163,6 @@ public class TextEditor extends Application {
             }
         });
         editorScene.setOnKeyPressed(event -> {
-           System.out.println(event.getCode()); // TODO: remove when finished testing
             // ESCAPE COMMAND: exits the program
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 System.exit(0);}
@@ -168,9 +197,17 @@ public class TextEditor extends Application {
                 ctrlDown.set(true);}
             // SAVE COMMAND (CTRL+S): allows user to save the file
             else if (event.getCode().equals(KeyCode.S) && ctrlDown.getOpaque()) {
-                File file = fileChooser.showSaveDialog(primaryStage);
-                if (file != null) {
-                    saveText(text.toStringFile(), file);
+                if (isUntitled.getOpaque()) {
+                    currentFile = fileChooser.showSaveDialog(primaryStage);
+                    if (currentFile != null) {
+                        saveText(text.toStringFile(), currentFile);
+                        primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                        isUntitled.set(false);
+                    }
+                } else {
+                    if (currentFile != null) {
+                        saveText(text.toStringFile(), currentFile);
+                    }
                 }}
             // UNDO COMMAND (CTRL+Z): allows user to undo the latest text modifying command
             else if (event.getCode().equals(KeyCode.Z) && ctrlDown.getOpaque()) {
@@ -193,8 +230,6 @@ public class TextEditor extends Application {
             if (Character.getType(c)!=Character.CONTROL) {
                 text.insertText(c);
                 content.setText(text.toString());
-            } else {
-                System.out.println(c);
             }
             });
 
@@ -214,7 +249,6 @@ public class TextEditor extends Application {
             writer.println(content);
             writer.close();
         } catch (IOException ex) {
-            //TODO make a pop up error message
             System.out.println(ex.getStackTrace());
         }
     }
@@ -236,7 +270,6 @@ public class TextEditor extends Application {
 
             }
         } catch (IOException e) {
-            // TODO make a pop up error message
             e.printStackTrace();
         }
         return sb.toString();
