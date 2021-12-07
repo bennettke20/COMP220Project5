@@ -26,8 +26,8 @@ public class TextEditor extends Application {
     private int fontsize = 12;
 
     /**
-     * Set up the starting scene of your application given the primaryStage (basically the window)
-     * https://docs.oracle.com/javase/8/javafx/api/index.html
+     * Sets up the staring scene for our TextEditor application, given the primaryStage
+     * from main
      *
      * @param primaryStage the primary container for scenes
      */
@@ -41,7 +41,7 @@ public class TextEditor extends Application {
         text = new TextBlock();
 
         /**
-         * Scene Setup
+         * Overall Scene Setup
          */
         BorderPane layout = new BorderPane();
         double WINDOW_WIDTH = 1000;
@@ -60,7 +60,7 @@ public class TextEditor extends Application {
         content.setText(text.toString());
 
         /**
-         * Responsible for handling menu controlled commands:
+         * Menu bar scene setup
          */
         MenuBar mb = new MenuBar();
         // FILE MENU SETUP
@@ -81,9 +81,8 @@ public class TextEditor extends Application {
         MenuItem redoCommand = new MenuItem ("Redo");
         editmenu.getItems().add(undoCommand);
         editmenu.getItems().add(redoCommand);
-
-        //FONTS MENU
-        Menu fonts = new Menu("Fonts");
+        //FONTS MENU SETUP
+        Menu fonts = new Menu("Display Font Size");
         MenuItem eight = new MenuItem("8");
         MenuItem twlv = new MenuItem("12");
         MenuItem sxtn = new MenuItem("16");
@@ -105,35 +104,35 @@ public class TextEditor extends Application {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
                 "TEXT files (*.txt)", "*.txt")); // i.e. text files only
         /**
-         * action for setting font size to 8
+         * Action for setting font size to 8
          */
         eight.setOnAction(event -> {  //FONT SIZES
           this.fontsize = 8;
           content.setFont(new Font(fontsize));
         });
         /**
-         * action for setting font size to 12
+         * Action for setting font size to 12
          */
         twlv.setOnAction(event -> {
             this.fontsize = 12;
             content.setFont(new Font(fontsize));
         });
         /**
-         * action for setting font size to 16
+         * Action for setting font size to 16
          */
         sxtn.setOnAction(event -> {
             this.fontsize = 16;
             content.setFont(new Font(fontsize));
         });
         /**
-         * action for setting font size to 20
+         * Action for setting font size to 20
          */
         twenty.setOnAction(event -> {
             this.fontsize = 20;
             content.setFont(new Font(fontsize));
         });
         /**
-         * action for setting font size to 8\30
+         * Action for setting font size to 8\30
          */
         thirty.setOnAction(event -> {
             this.fontsize = 30;
@@ -141,7 +140,9 @@ public class TextEditor extends Application {
         });
 
         /**
-         *ACTION on saveItem
+         * Action on saveItem - saves the current text, either overriding/updating the current
+         * file, or saves a new file if the current text file not associated with an existing
+         * file (isUntitled)
          */
         saveItem.setOnAction(event -> {  //SAVE FILE
             if (isUntitled.getOpaque()) {
@@ -158,7 +159,7 @@ public class TextEditor extends Application {
             }
         });
         /**
-         * ACTION on saveItemAs
+         * Action on saveItemAs - saves text as a new text file
          */
         saveItemAs.setOnAction(event -> {  //SAVE FILE AS
             currentFile = fileChooser.showSaveDialog(primaryStage);
@@ -174,7 +175,7 @@ public class TextEditor extends Application {
             }
         });
         /**
-         * ACTION on openItem
+         * Action on openItem - allows user to open an existing text file
          */
         openItem.setOnAction(event -> {  //OPEN FILE
             currentFile = fileChooser.showOpenDialog(primaryStage);
@@ -186,7 +187,7 @@ public class TextEditor extends Application {
             }
         });
         /**
-         * ACTION on newItem
+         * Action on newItem - allows user to create a new untitled and blank text document
          */
         newItem.setOnAction(event -> {  //RESETS EDITOR
             text = new TextBlock();
@@ -195,7 +196,8 @@ public class TextEditor extends Application {
             primaryStage.setTitle("COMP 220 - Text Editor - Untitled");
         });
         /**
-         *ACTION on openReadOnly
+         *Action on openReadOnly - allows user to open an existing text file to read only
+         * (i.e. the user cannot edit its contents)
          */
         openReadOnly.setOnAction(event -> { // OPEN READ-ONLY
             currentFile = fileChooser.showOpenDialog(primaryStage);
@@ -207,14 +209,15 @@ public class TextEditor extends Application {
             }
         });
         /**
-         *ACTION on undoCommand
+         *ACTION on undoCommand - undoes the latest text modifying command
          */
         undoCommand.setOnAction(event -> { // UNDO COMMAND
             text.undo();
             content.setText(text.toString());
         });
         /**
-         *ACTION on redoCommand
+         *ACTION on redoCommand - redoes the most recent undone command (provided that no
+         * new commands have been executed since)
          */
         redoCommand.setOnAction(event -> {
             text.redo();
@@ -222,7 +225,8 @@ public class TextEditor extends Application {
         });
 
         /**
-         * Responsible for handling keyboard controlled commands:
+         * Executes for KeyReleased events:
+         * Responsible for handling when the control key is released
          */
         editorScene.setOnKeyReleased(event -> {
             // CTRL UP COMMAND: tracks whether the control key has been released
@@ -231,7 +235,8 @@ public class TextEditor extends Application {
             }
         });
         /**
-         * handling action keys such as escape, backspace, and arrows
+         * Executes for KeyPressed events:
+         * Handles action keys such as escape, backspace, arrows, and CTRL+letter commands
          */
         editorScene.setOnKeyPressed(event -> {
             // ESCAPE COMMAND: exits the program
@@ -253,8 +258,7 @@ public class TextEditor extends Application {
             // RIGHT ARROW KEY COMMAND: moves cursor right
             else if(event.getCode().equals(KeyCode.RIGHT)) {
                 text.moveCursorForward();
-                content.setText(text.toString());
-                System.out.println("r arr detected");}
+                content.setText(text.toString());}
             // ENTER COMMAND: adds a new line to the text
             else if (event.getCode().equals(KeyCode.ENTER)) {
                 text.insertText('\n');
@@ -293,8 +297,8 @@ public class TextEditor extends Application {
                 });
 
         /**
-         * Responsible for adding all text to the text editor:
-         * (dealing with printable keys)
+         * Executes on KeyTyped Events:
+         * Responsible for adding all characters to the text
          */
         editorScene.setOnKeyTyped(event -> {
             char c = event.getCharacter().charAt(0);
