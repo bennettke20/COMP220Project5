@@ -63,14 +63,14 @@ public class TextBlock {
         commandHistory.empty();
         redoable = false;
         redoableCommands.empty();
-    } //TODO: delete?
+    }
 
     /**
      * Inserts a Character at the cursor index
      * @param toAdd Character to insert
      */
     public void insertText(char toAdd) {
-        //TODO: inserts char at cursor index
+        // inserts char at cursor index
         charList.add(cursor, toAdd);
         cursor++;
         commandHistory.add("i" + toAdd);
@@ -83,7 +83,7 @@ public class TextBlock {
      * Removes the Character at the cursor location
      */
     public void deleteTextBack() {
-        //TODO: code to delete the Character at the cursor index
+        // code to delete the Character at the cursor index
         if (cursor>0) {
             commandHistory.push("b" + charList.get(cursor-1)); // add to history
             charList.remove(cursor-1);
