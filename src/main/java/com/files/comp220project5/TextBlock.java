@@ -43,6 +43,10 @@ public class TextBlock {
         redoableCommands = new Stack<>();
     }
 
+    /**
+     * Constructs a textBlock object from a starting string,
+     * @param starter
+     */
     public TextBlock(String starter) {
         charList = new ArrayList<>();
         char[] a = starter.toCharArray();
@@ -63,7 +67,7 @@ public class TextBlock {
         commandHistory.empty();
         redoable = false;
         redoableCommands.empty();
-    } //TODO: delete?
+    }
 
     /**
      * Inserts a Character at the cursor index

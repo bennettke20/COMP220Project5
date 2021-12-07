@@ -31,6 +31,7 @@ public class TextEditor extends Application {
      *
      * @param primaryStage the primary container for scenes
      */
+
     @Override
     public void start(Stage primaryStage) {
         // Add a title to the application window
@@ -39,7 +40,7 @@ public class TextEditor extends Application {
         AtomicBoolean isUntitled = new AtomicBoolean(true); // tracks whether file is an untitled file
         text = new TextBlock();
 
-        /*
+        /**
          * Scene Setup
          */
         BorderPane layout = new BorderPane();
@@ -58,7 +59,7 @@ public class TextEditor extends Application {
         layout.setCenter(content);
         content.setText(text.toString());
 
-        /*
+        /**
          * Responsible for handling menu controlled commands:
          */
         MenuBar mb = new MenuBar();
@@ -103,29 +104,45 @@ public class TextEditor extends Application {
         fileChooser.setTitle("File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
                 "TEXT files (*.txt)", "*.txt")); // i.e. text files only
-
+        /**
+         * action for setting font size to 8
+         */
         eight.setOnAction(event -> {  //FONT SIZES
           this.fontsize = 8;
           content.setFont(new Font(fontsize));
         });
+        /**
+         * action for setting font size to 12
+         */
         twlv.setOnAction(event -> {
             this.fontsize = 12;
             content.setFont(new Font(fontsize));
         });
+        /**
+         * action for setting font size to 16
+         */
         sxtn.setOnAction(event -> {
             this.fontsize = 16;
             content.setFont(new Font(fontsize));
         });
+        /**
+         * action for setting font size to 20
+         */
         twenty.setOnAction(event -> {
             this.fontsize = 20;
             content.setFont(new Font(fontsize));
         });
+        /**
+         * action for setting font size to 8\30
+         */
         thirty.setOnAction(event -> {
             this.fontsize = 30;
             content.setFont(new Font(fontsize));
         });
 
-        //ACTION on saveItem
+        /**
+         *ACTION on saveItem
+         */
         saveItem.setOnAction(event -> {  //SAVE FILE
             if (isUntitled.getOpaque()) {
                 currentFile = fileChooser.showSaveDialog(primaryStage);
@@ -140,7 +157,9 @@ public class TextEditor extends Application {
                 }
             }
         });
-        //ACTION on saveitemAs
+        /**
+         * ACTION on saveItemAs
+         */
         saveItemAs.setOnAction(event -> {  //SAVE FILE AS
             currentFile = fileChooser.showSaveDialog(primaryStage);
                 if (currentFile != null) {
@@ -154,7 +173,9 @@ public class TextEditor extends Application {
                 }
             }
         });
-        //ACTION on openItem
+        /**
+         * ACTION on openItem
+         */
         openItem.setOnAction(event -> {  //OPEN FILE
             currentFile = fileChooser.showOpenDialog(primaryStage);
                 if (currentFile != null) {
@@ -164,14 +185,18 @@ public class TextEditor extends Application {
                 isUntitled.set(false);
             }
         });
-        //ACTION on newItem
-        newItem.setOnAction(event -> {  //RESET EDITOR
+        /**
+         * ACTION on newItem
+         */
+        newItem.setOnAction(event -> {  //RESETS EDITOR
             text = new TextBlock();
             content.setText(text.toString());
             isUntitled.set(true);
             primaryStage.setTitle("COMP 220 - Text Editor - Untitled");
         });
-        //ACTION on openReadOnly
+        /**
+         *ACTION on openReadOnly
+         */
         openReadOnly.setOnAction(event -> { // OPEN READ-ONLY
             currentFile = fileChooser.showOpenDialog(primaryStage);
                 if (currentFile != null) {
@@ -181,18 +206,22 @@ public class TextEditor extends Application {
                 isUntitled.set(false);
             }
         });
-        //ACTION on undoCommand
+        /**
+         *ACTION on undoCommand
+         */
         undoCommand.setOnAction(event -> { // UNDO COMMAND
             text.undo();
             content.setText(text.toString());
         });
-        //ACTION on redoCommand
+        /**
+         *ACTION on redoCommand
+         */
         redoCommand.setOnAction(event -> {
             text.redo();
             content.setText(text.toString());
         });
 
-        /*
+        /**
          * Responsible for handling keyboard controlled commands:
          */
         editorScene.setOnKeyReleased(event -> {
@@ -201,6 +230,9 @@ public class TextEditor extends Application {
                 ctrlDown.set(false);
             }
         });
+        /**
+         * handling action keys such as escape, backspace, and arrows
+         */
         editorScene.setOnKeyPressed(event -> {
             // ESCAPE COMMAND: exits the program
             if (event.getCode().equals(KeyCode.ESCAPE)) {
@@ -260,7 +292,7 @@ public class TextEditor extends Application {
             }
                 });
 
-        /*
+        /**
          * Responsible for adding all text to the text editor:
          * (dealing with printable keys)
          */
