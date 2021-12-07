@@ -65,7 +65,7 @@ public class TextEditor extends Application {
         MenuItem saveItemAs = new MenuItem("Save As");
         MenuItem openItem = new MenuItem("Open");
         MenuItem newItem = new MenuItem("New");
-        MenuItem openReadOnly = new MenuItem ("Open Read-Only File");
+        MenuItem openReadOnly = new MenuItem ("Open Read-Only");
         filemenu.getItems().add(saveItem);
         filemenu.getItems().add(saveItemAs);
         filemenu.getItems().add(openItem);
@@ -107,7 +107,12 @@ public class TextEditor extends Application {
                 if (currentFile != null) {
                 saveText(text.toStringFile(), currentFile);
                 isUntitled.set(false);
-                primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                if (text instanceof ReadOnlyText) {
+                    primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName() +
+                    " (Read Only)");
+                } else {
+                    primaryStage.setTitle("COMP 220 - Text Editor - " + currentFile.getName());
+                }
             }
         });
         //ACTION on openItem
