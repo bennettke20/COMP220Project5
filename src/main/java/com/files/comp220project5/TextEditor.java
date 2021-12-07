@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,6 +35,11 @@ public class TextEditor extends Application {
      * (note: font size cannot transfer to text files)
      */
     private int fontsize;
+    /**
+     * HashMap for holding the various font sizes possible, and their respective
+     * command names
+     */
+    private HashMap<String, Integer> fontSizes;
 
     /**
      * Sets up the staring scene for our TextEditor application, given the primaryStage
@@ -41,7 +47,6 @@ public class TextEditor extends Application {
      *
      * @param primaryStage the primary container for scenes
      */
-
     @Override
     public void start(Stage primaryStage) {
         // Add a title to the application window
@@ -49,7 +54,14 @@ public class TextEditor extends Application {
         AtomicBoolean ctrlDown = new AtomicBoolean(false); // tracks whether CTRL key is down
         AtomicBoolean isUntitled = new AtomicBoolean(true); // tracks whether file is an untitled file
         text = new TextBlock();
-        fontsize = 12;
+        fontSizes = new HashMap<String, Integer>();
+        // initializing possible fonts:
+        fontSizes.put("eight", 8);
+        fontSizes.put("twlv", 12);
+        fontSizes.put("sxtn", 16);
+        fontSizes.put("twenty", 20);
+        fontSizes.put("thirty", 30);
+        fontsize = 12; // starter font
 
         /**
          * Overall Scene Setup
@@ -118,35 +130,35 @@ public class TextEditor extends Application {
          * Action for setting font size to 8
          */
         eight.setOnAction(event -> {  //FONT SIZES
-          this.fontsize = 8;
+          this.fontsize = fontSizes.get("eight");
           content.setFont(new Font(fontsize));
         });
         /**
          * Action for setting font size to 12
          */
         twlv.setOnAction(event -> {
-            this.fontsize = 12;
+            this.fontsize = fontSizes.get("twlv");
             content.setFont(new Font(fontsize));
         });
         /**
          * Action for setting font size to 16
          */
         sxtn.setOnAction(event -> {
-            this.fontsize = 16;
+            this.fontsize = fontSizes.get("sxtn");
             content.setFont(new Font(fontsize));
         });
         /**
          * Action for setting font size to 20
          */
         twenty.setOnAction(event -> {
-            this.fontsize = 20;
+            this.fontsize = fontSizes.get("twenty");
             content.setFont(new Font(fontsize));
         });
         /**
          * Action for setting font size to 8\30
          */
         thirty.setOnAction(event -> {
-            this.fontsize = 30;
+            this.fontsize = fontSizes.get("thirty");
             content.setFont(new Font(fontsize));
         });
 
