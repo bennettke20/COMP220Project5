@@ -149,9 +149,9 @@ public class TextEditor extends Application {
             else if (event.getCode().equals(KeyCode.LEFT)) {
                 text.moveCursorBackward();
                 content.setText(text.toString());
-                System.out.println("L arr detected");}
+            }
             // RIGHT ARROW KEY COMMAND: moves cursor right
-            else if (event.getCode().equals(KeyCode.RIGHT)) {
+            else if(event.getCode().equals(KeyCode.RIGHT)) {
                 text.moveCursorForward();
                 content.setText(text.toString());
                 System.out.println("r arr detected");}
@@ -182,7 +182,7 @@ public class TextEditor extends Application {
                 text.redo();
                 content.setText(text.toString());
             }
-        });
+                });
 
         /*
          * Responsible for adding all text to the text editor:
@@ -196,11 +196,11 @@ public class TextEditor extends Application {
             } else {
                 System.out.println(c);
             }
-        });
+            });
 
         // display the interface
         primaryStage.show();
-    }
+    };
 
     /**
      * Saves content to a file
