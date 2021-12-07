@@ -7,6 +7,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TextEditor extends Application {
     private TextBlock text;
+    private int fontsize = 12;
 
     /**
      * Set up the starting scene of your application given the primaryStage (basically the window)
@@ -47,6 +49,7 @@ public class TextEditor extends Application {
 
         // text content setup:
         Text content = new Text();
+        content.setFont(new Font(fontsize));
         content.setFocusTraversable(false);
         content.setTextAlignment(TextAlignment.LEFT);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
@@ -74,14 +77,50 @@ public class TextEditor extends Application {
         MenuItem redoCommand = new MenuItem ("Redo");
         editmenu.getItems().add(undoCommand);
         editmenu.getItems().add(redoCommand);
+
+        //FONT SIZE CHOOSER
+        Menu FontSize = new Menu("Font");
+        MenuItem eight = new MenuItem("8");
+        MenuItem twelv = new MenuItem("12");
+        MenuItem sixtn = new MenuItem("16");
+        MenuItem twenty = new MenuItem ("20");
+        MenuItem thirty = new MenuItem ("30");
+        FontSize.getItems().add(eight);
+        FontSize.getItems().add(twelv);
+        FontSize.getItems().add(sixtn);
+        FontSize.getItems().add(twenty);
+        FontSize.getItems().add(thirty);
+
         //MENU DISPLAY SETUP
         mb.getMenus().add(filemenu);
         mb.getMenus().add(editmenu);
+        mb.getMenus().add(FontSize);
         layout.setTop(mb);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
                 "TEXT files (*.txt)", "*.txt")); // i.e. text files only
+
+        eight.setOnAction(event -> {  //FONT 8
+            this.fontsize = 8;
+            content.setFont(new Font(fontsize));
+        });
+        twelv.setOnAction(event -> {  //FONT 12
+            this.fontsize = 12;
+            content.setFont(new Font(fontsize));
+        });
+        sixtn.setOnAction(event -> {  //FONT 16
+            this.fontsize = 16;
+            content.setFont(new Font(fontsize));
+        });
+        twenty.setOnAction(event -> {  //FONT 20
+            this.fontsize = 20;
+            content.setFont(new Font(fontsize));
+        });
+        thirty.setOnAction(event -> {  //FONT 30
+            this.fontsize = 30;
+            content.setFont(new Font(fontsize));
+        });
 
         //ACTION on saveitem
         saveItem.setOnAction(event -> {  //SAVE FILE
@@ -100,7 +139,6 @@ public class TextEditor extends Application {
         });
         //ACTION on newItem
         newItem.setOnAction(event -> {  //RESET EDITOR
-            //TODO: make a reset warning and confirmation?
             text = new TextBlock();
                     content.setText(text.toString());
         });
@@ -133,7 +171,6 @@ public class TextEditor extends Application {
             }
         });
         editorScene.setOnKeyPressed(event -> {
-           System.out.println(event.getCode()); // TODO: remove when finished testing
             // ESCAPE COMMAND: exits the program
             if (event.getCode().equals(KeyCode.ESCAPE)) {
                 System.exit(0);}
@@ -154,7 +191,7 @@ public class TextEditor extends Application {
             else if(event.getCode().equals(KeyCode.RIGHT)) {
                 text.moveCursorForward();
                 content.setText(text.toString());
-                System.out.println("r arr detected");}
+            }
             // ENTER COMMAND: adds a new line to the text
             else if (event.getCode().equals(KeyCode.ENTER)) {
                 text.insertText('\n');
@@ -193,8 +230,6 @@ public class TextEditor extends Application {
             if (Character.getType(c)!=Character.CONTROL) {
                 text.insertText(c);
                 content.setText(text.toString());
-            } else {
-                System.out.println(c);
             }
             });
 
@@ -214,7 +249,6 @@ public class TextEditor extends Application {
             writer.println(content);
             writer.close();
         } catch (IOException ex) {
-            //TODO make a pop up error message
             System.out.println(ex.getStackTrace());
         }
     }
@@ -236,7 +270,6 @@ public class TextEditor extends Application {
 
             }
         } catch (IOException e) {
-            // TODO make a pop up error message
             e.printStackTrace();
         }
         return sb.toString();
