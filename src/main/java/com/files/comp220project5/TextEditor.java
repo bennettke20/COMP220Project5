@@ -7,6 +7,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TextEditor extends Application {
     private TextBlock text;
     private File currentFile;
+    private int fontsize = 12;
 
     /**
      * Set up the starting scene of your application given the primaryStage (basically the window)
@@ -48,6 +50,7 @@ public class TextEditor extends Application {
 
         // text content setup:
         Text content = new Text();
+        content.setFont(new Font(12));
         content.setFocusTraversable(false);
         content.setTextAlignment(TextAlignment.LEFT);
         BorderPane.setAlignment(content, Pos.TOP_LEFT);  //set text to begin at top left -ch
@@ -77,14 +80,50 @@ public class TextEditor extends Application {
         MenuItem redoCommand = new MenuItem ("Redo");
         editmenu.getItems().add(undoCommand);
         editmenu.getItems().add(redoCommand);
+
+        //FONTS MENU
+        Menu fonts = new Menu("Fonts");
+        MenuItem eight = new MenuItem("8");
+        MenuItem twlv = new MenuItem("12");
+        MenuItem sxtn = new MenuItem("16");
+        MenuItem twenty = new MenuItem("20");
+        MenuItem thirty = new MenuItem("30");
+        fonts.getItems().add(eight);
+        fonts.getItems().add(twlv);
+        fonts.getItems().add(sxtn);
+        fonts.getItems().add(twenty);
+        fonts.getItems().add(thirty);
+
         //MENU DISPLAY SETUP
         mb.getMenus().add(filemenu);
         mb.getMenus().add(editmenu);
+        mb.getMenus().add(fonts);
         layout.setTop(mb);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(
                 "TEXT files (*.txt)", "*.txt")); // i.e. text files only
+
+        eight.setOnAction(event -> {  //FONT SIZES
+          this.fontsize = 8;
+          content.setFont(new Font(fontsize));
+        });
+        twlv.setOnAction(event -> {
+            this.fontsize = 12;
+            content.setFont(new Font(fontsize));
+        });
+        sxtn.setOnAction(event -> {
+            this.fontsize = 16;
+            content.setFont(new Font(fontsize));
+        });
+        twenty.setOnAction(event -> {
+            this.fontsize = 20;
+            content.setFont(new Font(fontsize));
+        });
+        thirty.setOnAction(event -> {
+            this.fontsize = 30;
+            content.setFont(new Font(fontsize));
+        });
 
         //ACTION on saveItem
         saveItem.setOnAction(event -> {  //SAVE FILE
