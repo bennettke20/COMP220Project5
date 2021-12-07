@@ -21,9 +21,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class TextEditor extends Application {
+    /**
+     * TextBlock which will hold the text displayed in the editor
+     */
     private TextBlock text;
+    /**
+     * Keeps track of the file currently being edited
+     */
     private File currentFile;
-    private int fontsize = 12;
+    /**
+     * Keeps track of the current font size of the editor display
+     * (note: font size cannot transfer to text files)
+     */
+    private int fontsize;
 
     /**
      * Sets up the staring scene for our TextEditor application, given the primaryStage
@@ -39,6 +49,7 @@ public class TextEditor extends Application {
         AtomicBoolean ctrlDown = new AtomicBoolean(false); // tracks whether CTRL key is down
         AtomicBoolean isUntitled = new AtomicBoolean(true); // tracks whether file is an untitled file
         text = new TextBlock();
+        fontsize = 12;
 
         /**
          * Overall Scene Setup

@@ -4,7 +4,14 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class TextBlock {
+    /**
+     * List of characters comprising the current text block document
+     */
     private ArrayList<Character> charList;
+    /**
+     * Int tracking where the cursor is in the text (text modifying commands will be
+     * executed based on cursor location)
+     */
     private int cursor;
     /**
      * Stack to keep track of command history using a String code, so that
@@ -20,7 +27,7 @@ public class TextBlock {
      */
     private Stack<String> commandHistory;
     /**
-     * Boolean to keep track of whether a commands undone are re-doable
+     * Boolean to keep track of whether commands undone are re-doable
      */
     private boolean redoable;
     /**
